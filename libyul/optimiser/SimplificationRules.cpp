@@ -21,15 +21,16 @@
 
 #include <libyul/optimiser/SimplificationRules.h>
 
-#include <libyul/optimiser/ASTCopier.h>
-#include <libyul/optimiser/Semantics.h>
-#include <libyul/optimiser/SyntacticalEquality.h>
-#include <libyul/optimiser/DataFlowAnalyzer.h>
-#include <libyul/backends/evm/EVMDialect.h>
 #include <libyul/AST.h>
 #include <libyul/Utilities.h>
+#include <libyul/backends/evm/EVMDialect.h>
+#include <libyul/optimiser/ASTCopier.h>
+#include <libyul/optimiser/DataFlowAnalyzer.h>
+#include <libyul/optimiser/Semantics.h>
+#include <libyul/optimiser/SyntacticalEquality.h>
 
 #include <libevmasm/RuleList.h>
+#include <libsolutil/StringUtils.h>
 
 using namespace std;
 using namespace solidity;
@@ -250,7 +251,7 @@ Expression Pattern::toExpression(shared_ptr<DebugData const> const& _debugData) 
 			arguments.emplace_back(arg.toExpression(_debugData));
 
 		string name = instructionInfo(m_instruction).name;
-		transform(begin(name), end(name), begin(name), [](auto _c) { return tolower(_c); });
+		util::toLower(name);
 
 		return FunctionCall{_debugData,
 			Identifier{_debugData, YulString{name}},

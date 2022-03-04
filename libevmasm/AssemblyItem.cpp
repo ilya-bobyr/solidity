@@ -201,7 +201,7 @@ string AssemblyItem::toAssemblyText(Assembly const& _assembly) const
 	{
 		assertThrow(isValidInstruction(instruction()), AssemblyException, "Invalid instruction.");
 		string name = instructionInfo(instruction()).name;
-		transform(name.begin(), name.end(), name.begin(), [](unsigned char _c) { return tolower(_c); });
+		util::toLower(name);
 		text = name;
 		break;
 	}

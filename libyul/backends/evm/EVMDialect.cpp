@@ -142,7 +142,7 @@ map<YulString, BuiltinFunctionForEVM> createBuiltins(langutil::EVMVersion _evmVe
 	map<YulString, BuiltinFunctionForEVM> builtins;
 	for (auto const& instr: evmasm::c_instructions)
 	{
-		string name = instr.first;		
+		string name = instr.first;
 		toLower(name);
 		auto const opcode = instr.second;
 

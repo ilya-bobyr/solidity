@@ -450,6 +450,12 @@ void CommandLineInterface::readInputFiles()
 	for (boost::filesystem::path const& allowedDirectory: m_options.input.allowedDirectories)
 		m_fileReader.allowDirectory(allowedDirectory);
 
+	m_fileReader.resolveSymlinks(
+		m_options.input.resolveSymlinks
+		? FileReader::SymlinkResolution::Enabled
+		: FileReader::SymlinkResolution::Disabled
+		);
+
 	map<std::string, set<boost::filesystem::path>> collisions =
 		m_fileReader.detectSourceUnitNameCollisions(m_options.input.paths);
 	if (!collisions.empty())

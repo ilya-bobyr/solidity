@@ -74,6 +74,7 @@ static string const g_strModelCheckerTargets = "model-checker-targets";
 static string const g_strModelCheckerTimeout = "model-checker-timeout";
 static string const g_strNone = "none";
 static string const g_strNoOptimizeYul = "no-optimize-yul";
+static string const g_strNoResolveSymlinks = "no-resolve-symlinks";
 static string const g_strOptimize = "optimize";
 static string const g_strOptimizeRuns = "optimize-runs";
 static string const g_strOptimizeYul = "optimize-yul";
@@ -221,6 +222,7 @@ bool CommandLineOptions::operator==(CommandLineOptions const& _other) const noex
 		input.basePath == _other.input.basePath &&
 		input.includePaths == _other.input.includePaths &&
 		input.allowedDirectories == _other.input.allowedDirectories &&
+		input.resolveSymlinks == _other.input.resolveSymlinks &&
 		input.ignoreMissingFiles == _other.input.ignoreMissingFiles &&
 		input.errorRecovery == _other.input.errorRecovery &&
 		output.dir == _other.output.dir &&
@@ -548,6 +550,12 @@ General Information)").c_str(),
 			g_strAllowPaths.c_str(),
 			po::value<string>()->value_name("path(s)"),
 			"Allow a given path for imports. A list of paths can be supplied by separating them with a comma."
+		)
+		(
+			g_strNoResolveSymlinks.c_str(),
+			("Disable symbolic link resolution when computing effective paths for input files. "
+			"Affects --" + g_strBasePath + ", --" + g_strIncludePath + ", --" + g_strAllowPaths + ", "
+			"as well as paths to input files on the command line and in the standard JSON file URLs.").c_str()
 		)
 		(
 			g_strIgnoreMissingFiles.c_str(),
@@ -1053,6 +1061,9 @@ void CommandLineParser::processArgs()
 			if (!allowedPath.empty())
 				m_options.input.allowedDirectories.insert(allowedPath);
 	}
+
+	if (m_args.count(g_strNoResolveSymlinks))
+		m_options.input.resolveSymlinks = false;
 
 	if (m_args.count(g_strStopAfter))
 	{

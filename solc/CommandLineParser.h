@@ -173,6 +173,7 @@ struct CommandLineOptions
 		boost::filesystem::path basePath = "";
 		std::vector<boost::filesystem::path> includePaths;
 		FileReader::FileSystemPathSet allowedDirectories;
+		bool resolveSymlinks = true;
 		bool ignoreMissingFiles = false;
 		bool errorRecovery = false;
 	} input;

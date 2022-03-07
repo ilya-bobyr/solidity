@@ -46,9 +46,11 @@ namespace solidity::frontend
 FileReader::FileReader(
 	boost::filesystem::path _basePath,
 	vector<boost::filesystem::path> const& _includePaths,
-	FileSystemPathSet _allowedDirectories
+	FileSystemPathSet _allowedDirectories,
+        SymlinkResolution _resolveSymlinks
 ):
 	m_allowedDirectories(std::move(_allowedDirectories)),
+	m_resolveSymlinks(_resolveSymlinks),
 	m_sourceCodes()
 {
 	setBasePath(_basePath);
@@ -84,6 +86,11 @@ void FileReader::allowDirectory(boost::filesystem::path _path)
 	m_allowedDirectories.insert(std::move(_path));
 }
 
+void FileReader::resolveSymlinks(SymlinkResolution _resolveSymlinks)
+{
+	m_resolveSymlinks = _resolveSymlinks;
+}
+
 void FileReader::addOrUpdateFile(boost::filesystem::path const& _path, SourceCode _source)
 {
 	m_sourceCodes[cliPathToSourceUnitName(_path)] = std::move(_source);
@@ -115,7 +122,7 @@ ReadCallback::Result FileReader::readFile(string const& _kind, string const& _so
 
 		for (auto const& prefix: prefixes)
 		{
-			boost::filesystem::path canonicalPath = normalizeCLIPathForVFS(prefix / strippedSourceUnitName, SymlinkResolution::Enabled);
+			boost::filesystem::path canonicalPath = normalizeCLIPathForVFS(prefix / strippedSourceUnitName, m_resolveSymlinks);
 			if (boost::filesystem::exists(canonicalPath))
 				candidates.push_back(std::move(canonicalPath));
 		}
@@ -146,7 +153,7 @@ ReadCallback::Result FileReader::readFile(string const& _kind, string const& _so
 
 		bool isAllowed = false;
 		for (boost::filesystem::path const& allowedDir: allowedPaths)
-			if (isPathPrefix(normalizeCLIPathForVFS(allowedDir, SymlinkResolution::Enabled), candidates[0]))
+			if (isPathPrefix(normalizeCLIPathForVFS(allowedDir, m_resolveSymlinks), candidates[0]))
 			{
 				isAllowed = true;
 				break;

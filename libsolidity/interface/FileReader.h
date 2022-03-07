@@ -45,11 +45,13 @@ public:
 	};
 
 	/// Constructs a FileReader with a base path and sets of include paths and allowed directories
-	/// that will be used when requesting files from this file reader instance.
+	/// that will be used when requesting files from this file reader instance. @p _resolveSymlinks
+	/// indicates if symlinks should be preserved (@a Disabled) or resolved (@a Enabled).
 	explicit FileReader(
 		boost::filesystem::path _basePath = {},
 		std::vector<boost::filesystem::path> const& _includePaths = {},
-		FileSystemPathSet _allowedDirectories = {}
+		FileSystemPathSet _allowedDirectories = {},
+		SymlinkResolution _resolveSymlinks = SymlinkResolution::Disabled
 	);
 
 	void setBasePath(boost::filesystem::path const& _path);
@@ -60,6 +62,9 @@ public:
 
 	void allowDirectory(boost::filesystem::path _path);
 	FileSystemPathSet const& allowedDirectories() const noexcept { return m_allowedDirectories; }
+
+	void resolveSymlinks(SymlinkResolution _resolveSymlinks);
+	SymlinkResolution resolveSymlinks() const noexcept { return m_resolveSymlinks; }
 
 	/// @returns all sources by their internal source unit names.
 	StringMap const& sourceUnits() const noexcept { return m_sourceCodes; }
@@ -163,6 +168,10 @@ private:
 
 	/// list of allowed directories to read files from
 	FileSystemPathSet m_allowedDirectories;
+
+	/// When set to @a Enabled, symlinks in the paths will be resolved, before paths are checked
+	/// m_allowedDirectories.
+	SymlinkResolution m_resolveSymlinks;
 
 	/// map of input files to source code strings
 	StringMap m_sourceCodes;

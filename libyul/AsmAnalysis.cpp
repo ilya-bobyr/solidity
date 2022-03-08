@@ -366,12 +366,9 @@ vector<YulString> AsmAnalyzer::operator()(FunctionCall const& _funCall)
 	for (size_t i = _funCall.arguments.size(); i > 0; i--)
 	{
 		Expression const& arg = _funCall.arguments[i - 1];
-		if (
-			auto literalArgumentKind = (literalArguments && i <= literalArguments->size()) ?
-				literalArguments->at(i - 1) :
-				std::nullopt
-		)
+		if (literalArguments && i <= literalArguments->size())
 		{
+			auto literalArgumentKind = literalArguments->at(i - 1);
 			if (!holds_alternative<Literal>(arg))
 				m_errorReporter.typeError(
 					9114_error,
